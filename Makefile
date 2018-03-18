@@ -1,3 +1,6 @@
+#To use with source with name other than button change TARGET=button
+#To use with C instead od C++ in all: change $(TARGET).cpp to $(TARGET).c
+  
 MCU=attiny84
 AVRDUDEMCU=t84
 CC=/usr/bin/avr-gcc
