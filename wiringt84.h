@@ -18,6 +18,7 @@
 #define B3  4
 
 
+
 void pinMode ( int pin , int direction)
 {
 	bool pullUp ;
@@ -119,7 +120,6 @@ void pinMode ( int pin , int direction)
 	}
 }
 
-
 void digitalWrite(int pin, int condition)
 {
 	switch (pin)
@@ -215,7 +215,41 @@ bool digitalRead(int pin)
 	}
 			
 	return state;
+}	
+void initPWM(int pin)
+{
+	// COM0A0(PB2) - non-inverting
+	// COM0B0(PA7) - inverting
+	TCCR0A |= (1<<WGM01)|(1<<WGM00)|(1<<COM0A1)|(1<<COM0B1)|(1<<COM0B0) ;
+	TCCR0B |= (1<<CS01)|(1<<CS00) ; // pre-scale factor = 64
+	
+	// f_pwm = f_clk/(n* 256) = 1000000Hz/(64 * 256) = 61.03Hz		
+		
+	if (pin==B2)
+	{DDRB |= (1<<DDB2) ;}
+	if (pin==A7) 
+	{DDRA |= (1<<DDA7) ;}
+
 }
+
+void DutyCyclePWM(int pin, int DutyCycle) 
+{
+	//Pin PA7 - inverting
+	//Pin PB2 - non inverting
+	//Duty cycle from 0 to 256
+	
+	if (pin==A7)
+	{OCR0B = DutyCycle ;}
+	if (pin==B2)
+	{OCR0A = DutyCycle ;}
+}
+		 
+	 
+	
+	
+	
+	
+	
 
 /*Notes
 * 					______
@@ -223,8 +257,8 @@ bool digitalRead(int pin)
 * 				PB0|2	13|PA0
 * 	 	 _____	PB1|3	12|PA1
 * 		(RESET)	PB3|4	11|PA2
-* 				PB2|5	10|PA3
-* 				PA7|6	 9|PA4	(SCL)
+* 		(OC0A)	PB2|5	10|PA3
+* 		(OC0B)	PA7|6	 9|PA4	(SCL)
 * 		(MOSI)	PA6|7	 8|PA5  (MISO)
 * 				   --------
 *  
